@@ -1,4 +1,10 @@
 import type { Vec3, View } from "../../../shared/types";
+export interface Stage {
+  w: number;
+  h: number;
+  scale: number;
+}
+export const DEFAULT_STAGE: Stage = { w: 800, h: 560, scale: 145 };
 export function cameraPoint(p: Vec3, view: View): Vec3 {
   const a = (view.yaw * Math.PI) / 180,
     b = (view.pitch * Math.PI) / 180,
@@ -10,18 +16,18 @@ export function cameraPoint(p: Vec3, view: View): Vec3 {
     p[1] * Math.sin(b) + z * Math.cos(b),
   ];
 }
-export function project(p: Vec3, view: View) {
+export function project(p: Vec3, view: View, stage: Stage = DEFAULT_STAGE) {
   const c = cameraPoint(p, view);
   return {
-    x: 400 + c[0] * 145 * view.zoom,
-    y: 280 - c[1] * 145 * view.zoom,
+    x: stage.w / 2 + c[0] * stage.scale * view.zoom,
+    y: stage.h / 2 - c[1] * stage.scale * view.zoom,
     z: c[2],
   };
 }
-export function polygon(points: Vec3[], view: View) {
+export function polygon(points: Vec3[], view: View, stage?: Stage) {
   return points
     .map((p) => {
-      const v = project(p, view);
+      const v = project(p, view, stage);
       return `${v.x},${v.y}`;
     })
     .join(" ");

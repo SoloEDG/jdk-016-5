@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   HelpCircle,
   Leaf,
+  Film,
 } from "lucide-vue-next";
 import { createDocument } from "../shared/document";
 import { PaperPanel, papers, replacePaper } from "../features/paper";
@@ -31,6 +32,7 @@ import {
   usePlayer,
 } from "../features/sequence";
 import { Viewport, ObservePanel, setView } from "../features/observe";
+import { ExportDialog, ExportStatus, openExportDialog } from "../features/export";
 const doc = reactive(createDocument(papers[0]!, makeSteps(papers[0]!)));
 const pose = computed(() => solvePose(doc.paper, doc.angles)),
   hinges = computed(() => hingePositions(doc.paper, pose.value));
@@ -76,6 +78,8 @@ function capture() {
           <HelpCircle :size="18" /></button
         ><button class="reset" @click="reset">
           <RotateCcw :size="14" />重新开始</button
+        ><button class="reset" @click="openExportDialog(doc)">
+          <Film :size="14" />导出视频</button
         ><button class="primary" @click="seek(doc, doc.steps.length - 1)">
           观察成品 <ArrowUpRight :size="15" />
         </button>
@@ -163,6 +167,8 @@ function capture() {
       </footer>
     </main>
     <div v-if="toast" role="status" class="toast">✓ {{ toast }}</div>
+    <ExportDialog :doc="doc" />
+    <ExportStatus :doc="doc" />
     <div v-if="help" class="modal-backdrop" @click.self="help = false">
       <section class="help-modal">
         <button class="close" @click="help = false">×</button>
